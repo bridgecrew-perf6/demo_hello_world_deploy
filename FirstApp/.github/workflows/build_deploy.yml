@@ -10,5 +10,5 @@ name: build_and_deploy_hello_world
 on:
   push:
     branches:
-     # - 'master'
-      - 'che'
+      - 'main'
+      
