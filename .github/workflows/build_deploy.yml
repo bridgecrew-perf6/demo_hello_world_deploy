@@ -13,10 +13,44 @@ on:
       - che
 
 jobs:
-  run-shell-commands:
-    runs-on: ubuntu-latest
-    steps:
-      - name: echo  a string
-        run: echo "hello world"
 
-      
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    # - name: Build the Docker image
+    #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+    - name: Set Commit Tag
+      run: echo "setCommitTag=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
+    - name: Display Commit Tag
+      run: echo "${{ env.setCommitTag }}"
+
+    - name: Docker Login
+      # You may pin to the exact commit or the version.
+      # uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
+      uses: docker/login-action@v1.14.1
+      with:
+        # Server address of Docker registry. If not set then will default to Docker Hub
+        # registry: # optional
+        # Username used to log against the Docker registry
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        # Password or personal access token used to log against the Docker registry
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # Log out from the Docker registry at the end of a job
+        # logout: # optional, default is true
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v2.10.0
+      with:
+        # Path to the Dockerfile
+        context: './FirstApp'
+        file: 'FirstApp/Dockerfile'
+        # List of output destinations (format: type=local,dest=path)
+        # outputs: # optional
+        # # Push is a shorthand for --output=type=registry
+        push: true
+        # List of tags
+        tags: demo-${{ env.setCommitTag }}
