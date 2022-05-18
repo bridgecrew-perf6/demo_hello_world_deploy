@@ -10,5 +10,13 @@ name: build_and_deploy_hello_world
 on:
   push:
     branches:
-      - 'main'
+      - che
+
+jobs:
+  run-shell-commands:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo  a string
+        run: echo "hello world"
+
       
