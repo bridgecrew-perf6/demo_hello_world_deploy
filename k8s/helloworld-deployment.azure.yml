@@ -26,12 +26,12 @@ spec:
           requests:
             cpu: 100m
             memory: "50Mi"
-        env:
-          - name: ConnectionStrings__ProductsContext
-            valueFrom:
-              configMapKeyRef:
-                name: mssql-connection-configmap
-                key: db-connection-string
+        #env:
+        #  - name: ConnectionStrings__ProductsContext
+        #    valueFrom:
+        #      configMapKeyRef:
+        #        name: mssql-connection-configmap
+        #        key: db-connection-string
         #     secretKeyRef:
         #       name: mssql-secret
         #       key: db-connection-string-secret
@@ -39,10 +39,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: mvc-service
+  name: helloworld-service
 spec:
   selector:
-    app: mvc
+    app: helloworld
   ports:
   - protocol: TCP
     port: 80
