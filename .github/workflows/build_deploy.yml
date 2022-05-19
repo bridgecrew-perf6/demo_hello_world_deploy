@@ -139,4 +139,4 @@ jobs:
 #           $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER 
 #        imagepullsecrets: |
 #          ${{ env.REGISTRY_NAME }}-registry-connection
-#        namespace: ${{ env.NAMESPACE }}
+        namespace: ${{ env.NAMESPACE }}

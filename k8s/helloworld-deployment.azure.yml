@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helloworld-deployment
+  namespace: demo-che
 spec:
   selector:
     matchLabels:
@@ -40,6 +41,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: helloworld-service
+  namespace: demo-che
 spec:
   selector:
     app: helloworld
