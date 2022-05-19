@@ -3,11 +3,13 @@ kind: Deployment
 metadata:
   name: helloworld-deployment
   namespace: demo-che
+  labels:
+    app: helloworld
 spec:
+  replicas: 3
   selector:
     matchLabels:
       app: helloworld
-  replicas: 3
   template:
     metadata:
       labels:
@@ -15,38 +17,7 @@ spec:
     spec:
       containers:
       - name: helloworld
-         # image: eche21/helloapp:9
+        # image: eche21/helloapp:9
         image: __DOCKER_REPOSITORY__/__IMAGE_NAME__:__IMAGE_TAG__
-        # image: __ACR_NAME__.azurecr.io/__DOCKER_IMAGE__:__TAG__
         ports:
         - containerPort: 80
-        resources:
-          limits:
-            cpu: 300m
-            memory: "100Mi"
-          requests:
-            cpu: 100m
-            memory: "50Mi"
-        #env:
-        #  - name: ConnectionStrings__ProductsContext
-        #    valueFrom:
-        #      configMapKeyRef:
-        #        name: mssql-connection-configmap
-        #        key: db-connection-string
-        #     secretKeyRef:
-        #       name: mssql-secret
-        #       key: db-connection-string-secret
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: helloworld-service
-  namespace: demo-che
-spec:
-  selector:
-    app: helloworld
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: LoadBalancer #NodePort
