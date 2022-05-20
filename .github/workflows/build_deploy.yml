@@ -121,7 +121,7 @@ jobs:
 #  
     - uses: cschleiden/replace-tokens@v1
       with:
-        files: '["k8s/*.yaml"]'
+        files: '["k8s/*.yml"]'
         tokenPrefix: __ # optional, default is #{
         tokenSuffix: __ # optional, default is }#
 #
