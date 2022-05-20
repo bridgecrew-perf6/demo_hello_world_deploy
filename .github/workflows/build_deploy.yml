@@ -60,7 +60,7 @@ jobs:
     - name: Build and Push to ACR 
       run: |
         docker build  --file ./FirstApp/Dockerfile    -t ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }} .
-#   docker push ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
 
 
 
