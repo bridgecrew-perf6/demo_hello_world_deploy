@@ -46,4 +46,21 @@ jobs:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }} 
         password: ${{ secrets.REGISTRY_PASSWORD }}
+#This step builds the docker image using docker build. The image is tagged.
+# We can also use a step predefined
+#in github market place.
+# But we use the command line. The docker cli and the docker daemon are already installed inside
+# the runner. This gives more flexibility and more control.
+#
+#    - name: Build Docker Image
+#      run:
+#        docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER --build-arg=token=secrets.MYTOKEN --no-cache
+#
+# Container build and push to a Azure Container registry (ACR)
+    - name: Build and Push to ACR 
+    - run: |
+        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+
+
 
