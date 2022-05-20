@@ -19,7 +19,7 @@ on:
 #
 jobs:
 
-  build-deploy-kub:
+  build-deploy-kubn:
     runs-on: ubuntu-latest
     env:
       DOCKER_REPOSITORY: eche21 # name of Docker Hub ID
@@ -47,87 +47,3 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }} 
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-#This step builds the docker image using docker build. The image is tagged.
-# We can also use a step predefined
-#in github market place.
-# But we use the command line. The docker cli and the docker daemon are already installed inside
-# the runner. This gives more flexibility and more control.
-#
-#    - name: Build Docker Image
-#      run:
-#        docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER --build-arg=token=secrets.MYTOKEN --no-cache
-#
-# Container build and push to a Azure Container registry (ACR)
-    - name: Build and Push to ACR 
-    - run: |
-        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
-#SCAN THE IMAGE using the open source tool trivy. Trivy download the image and scans it and look
-# for any severity
-#
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      continue-on-error: true
-      with:
-        image-ref: 'docker.io/${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}'
-        format: 'table'
-        exit-code: '1'
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'MEDIUM,HIGH,CRITICAL'
-#
-#Login to Docker Hub, and push the image. We need username and password. These are
-#provided as secrets and the secrets have been created and stored in Github
-#DOCKER_REPOSITORY is the username
-#DOCKERHUB_TOKEN is the secret for the password. The password will be passed to the variable stdin
-#
-#    - name: Login to Docker Hub
-#      run: |
-#        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKER_REPOSITORY --password-stdin
-#
-#Push the image using docker push
-#
-#    - name: Push Image to Docker Hub
-#      run:
-#        docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
-#  
-#    - uses: cschleiden/replace-tokens@v1
-#      with:
-#        files: '["k8s/*.yml"]'
-#        tokenPrefix: __ # optional, default is #{
-#        tokenSuffix: __ # optional, default is }#
-#      env:
-#        DOCKER_REPOSITORY: ${{ env.DOCKER_REPOSITORY }}
-#        IMAGE_NAME: ${{ env.IMAGE_NAME }}
-#        IMAGE_TAG: ${{ env.IMAGE_TAG }}
-#
-# Connect the target Azure Kubernetes Service (AKS) cluster. 
-    - name: Set the AKS cluster
-      uses: azure/aks-set-context@v1
-      with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        cluster-name: ${{ env.CLUSTER_NAME }}
-        resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
-#
-# Create imagepullsecret for Azure Container registry (ACR)
-    - uses: azure/k8s-create-secret@v1
-      with:
-        container-registry-url: ${{ env.REGISTRY_NAME }}.azurecr.io
-        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
-        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        secret-name: ${{ env.REGISTRY_NAME }}-registry-connection
-        namespace: ${{ env.NAMESPACE }}
-# Deploy app to AKS
-#    - uses: azure/k8s-deploy@v1
-#      with:
-#        namespace: ${{ env.NAMESPACE }}
-#        manifests: |
-#          k8s/helloworld-deployment.azure.yml
-#          manifests/service.yml
-#        images: |
-#          ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
-
-#           $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER 
-#        imagepullsecrets: |
-#          ${{ env.REGISTRY_NAME }}-registry-connection
-        
