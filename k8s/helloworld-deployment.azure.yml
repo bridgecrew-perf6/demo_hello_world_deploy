@@ -17,11 +17,16 @@ spec:
     spec:
       containers:
       - name: helloworld
-        # image: eche21/helloapp:9
-        image:  eche21/helloapp:17_
-        #image: $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
+        image: ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            cpu: 300m
+            memory: "100Mi"
+          requests:
+            cpu: 100m
+            memory: "50Mi"
 ---
 kind: Service
 apiVersion: v1
