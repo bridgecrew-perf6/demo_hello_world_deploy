@@ -18,8 +18,8 @@ spec:
       containers:
       - name: helloworld
         # image: eche21/helloapp:9
-        #image: __DOCKER_REPOSITORY__/__IMAGE_NAME__:__IMAGE_TAG__
-        image: $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
+        image:  eche21/helloapp:17_
+        #image: $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
         ports:
         - containerPort: 80
 ---
