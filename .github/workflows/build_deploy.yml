@@ -59,8 +59,8 @@ jobs:
 # Container build and push to a Azure Container registry (ACR)
     - name: Build and Push to ACR 
     - run: |
-        docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+        docker build  --file ./FirstApp/Dockerfile --tag ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+ #   docker push ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
 
 
 
