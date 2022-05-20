@@ -65,7 +65,7 @@ jobs:
 #
 #SCAN THE IMAGE using the open source tool trivy. Trivy download the image and scans it and look
 # for any severity
-#
+#I am not sure if the image ref is correct. Check!!
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       continue-on-error: true
@@ -97,5 +97,16 @@ jobs:
         container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         secret-name: ${{ env.REGISTRY_NAME }}-registry-connection
         namespace: ${{ env.NAMESPACE }}
-
+    
+  # Deploy app to AKS
+    - uses: azure/k8s-deploy@v1
+      with:
+        manifests: |
+          k8s/helloworld-deployment.azure.yml
+  #        manifests/service.yml
+        images: |
+          ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+        imagepullsecrets: |
+          ${{ env.REGISTRY_NAME }}-registry-connection
+        namespace: ${{ env.NAMESPACE }}
 
