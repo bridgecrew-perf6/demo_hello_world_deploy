@@ -124,8 +124,12 @@ jobs:
         files: '["k8s/*.yml"]'
         tokenPrefix: __ # optional, default is #{
         tokenSuffix: __ # optional, default is }#
+      env:
+        DOCKER_REPOSITORY: ${{ env.DOCKER_REPOSITORY }}
+        IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
 #
-# Set the target Azure Kubernetes Service (AKS) cluster. 
+# Connect the target Azure Kubernetes Service (AKS) cluster. 
     - name: Set the AKS cluster
       uses: azure/aks-set-context@v1
       with:
