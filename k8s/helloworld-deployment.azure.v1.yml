@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloapp-deployment
+  namespace: demo-che
+spec:
+  selector:
+    matchLabels:
+      app: helloapp
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: helloapp
+    spec:
+      containers:
+      - name: helloapp
+        image: ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+        ports:
+        - containerPort: 80
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: helloworld-deployment
+#   namespace: demo-che
+#   labels:
+#     app: helloworld
+# spec:
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: helloworld
+#   template:
+#     metadata:
+#       labels:
+#         app: helloworld
+#     spec:
+#       containers:
+#       - name: helloworld
+#         image: ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+#         ports:
+#         - containerPort: 80
+#         resources:
+#           limits:
+#             cpu: 300m
+#             memory: "100Mi"
+#           requests:
+#             cpu: 100m
+#             memory: "50Mi"
+# ---
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: helloworld-service
+#   namespace: demo-che
+# spec:
+#   selector:
+#     app: helloworld
+#   ports:
+#   - protocol: TCP
+#     port: 80
+#     targetPort: 80
+#   type: LoadBalancer #NodePort
