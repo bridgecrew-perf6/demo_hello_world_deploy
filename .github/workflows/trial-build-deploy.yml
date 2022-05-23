@@ -101,6 +101,8 @@ jobs:
         #'${{secrets.DOCKER_LOGIN}}/githubactions-aks-demo:${{github.sha}}'
         # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
         imagepullsecrets: docker-image-pull-secret
+        #
+        namespace: ${{ env.NAMESPACE }}
         # deploy/promote/reject
         action: deploy
         
