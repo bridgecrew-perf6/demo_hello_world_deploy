@@ -142,7 +142,7 @@ jobs:
       with:
         namespace: ${{ env.NAMESPACE }}
         manifests: |
-          k8s/helloworld-deployment.azure.yml
+          k8s/helloworld-deployment.azure.v2.yml
 #          manifests/service.yml
 #        images: |
 #          ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
