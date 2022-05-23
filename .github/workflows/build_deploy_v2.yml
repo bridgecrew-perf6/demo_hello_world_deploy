@@ -111,7 +111,7 @@ jobs:
 #
     - name: Login to Docker Hub
       run: |
-        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKER_REPOSITORY --password-stdin
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $eche21 --password-stdin
 #
 #Push the image using docker push
 #
