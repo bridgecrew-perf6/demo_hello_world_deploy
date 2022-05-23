@@ -6,11 +6,11 @@
 # 3. Deploy image to QA 
 
 name: build_and_deploy_hello_world
-
+#
 on:
-  push:
+  pull_request:
     branches:
-      - che
+      - main      
 #################################################################################
 # The name of the job is build-deploy-kub. The job runs on ubuntu. I have defined some
 #environment variables. The first group of variables are for the docker image. Image tag is a

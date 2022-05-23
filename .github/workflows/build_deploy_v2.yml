@@ -1,0 +1,153 @@
+# Helloworld Build and Deploy Pipeline
+# Triggers only on push to the branch che 
+
+# 1. Builds Atlas image, tags image with 'prod' and 'commit-sha', and pushes to ACR.
+# 2. Create and run DB Migration script on the QA database
+# 3. Deploy image to QA 
+
+name: build_and_deploy_hello_world_v1
+
+on:
+  push:
+    branches:
+      - che
+#############################################################################################
+# jobs:
+
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+#     # - name: Build the Docker image
+#     #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+#     - name: Set Commit Tag
+#       run: echo "setCommitTag=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
+#     - name: Display Commit Tag
+#       run: echo "${{ env.setCommitTag }}"
+
+#     - name: Docker Login
+#       # You may pin to the exact commit or the version.
+#       # uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
+#       uses: docker/login-action@v1.14.1
+#       with:
+#         # Server address of Docker registry. If not set then will default to Docker Hub
+#         # registry: # optional
+#         # Username used to log against the Docker registry
+#         username: ${{ secrets.DOCKERHUB_USERNAME }}
+#         # Password or personal access token used to log against the Docker registry
+#         password: ${{ secrets.DOCKERHUB_TOKEN }}
+#         # Log out from the Docker registry at the end of a job
+#         # logout: # optional, default is true
+
+#     - name: Build and push Docker images
+#       uses: docker/build-push-action@v2.10.0
+#       with:
+#         # Path to the Dockerfile
+#         context: './FirstApp'
+#         file: 'FirstApp/Dockerfile'
+#         # List of output destinations (format: type=local,dest=path)
+#         # outputs: # optional
+#         # # Push is a shorthand for --output=type=registry
+#         push: true
+#         # List of tags
+#         tags: demo-${{ env.setCommitTag }}
+#################################################################################
+# The name of the job is build-deploy-kub. The job runs on ubuntu. I have defined some
+#environment variables. The first group of variables are for the docker image. Image tag is a
+# github runner which is incremented each time a new build is triggered. 
+# I want to deploy to an AKS cluster. Th next variables are for the cluster.
+#
+jobs:
+
+  demo-build-deploy-kub:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REPOSITORY: regscale/devops # name of Docker Hub ID
+      IMAGE_NAME: demohelloworldapp
+      IMAGE_TAG: ${{ github.run_number }} # $GITHUB_RUN_NUMBER
+      
+      CLUSTER_NAME: RegScale
+      CLUSTER_RESOURCE_GROUP: Corporate
+      NAMESPACE: demo-che
+    
+    steps:
+#    
+#This step checks out the application source code
+#
+    - name: Git Checkout
+      uses: actions/checkout@v2
+#      
+#This step builds the docker image using docker build. The image is tagged.
+# We can also use a step predefined
+#in github market place.
+# But we use the command line. The docker cli and the docker daemon are already installed inside
+# the runner. This gives more flexibility and more control.
+#
+    - name: Build Docker Image
+      run:
+        docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER --build-arg=token=secrets.MYTOKEN --no-cache
+#
+#SCAN THE IMAGE using the open source tool trivy. Trivy download the image and scans it and look
+# for any severity
+#
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      continue-on-error: true
+      with:
+        image-ref: 'docker.io/${{ env.DOCKER_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'MEDIUM,HIGH,CRITICAL'
+#
+#Login to Docker Hub, and push the image. We need username and password. These are
+#provided as secrets and the secrets have been created and stored in Github
+#DOCKER_REPOSITORY is the username
+#DOCKERHUB_TOKEN is the secret for the password. The password will be passed to the variable stdin
+#
+    - name: Login to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKER_REPOSITORY --password-stdin
+#
+#Push the image using docker push
+#
+    - name: Push Image to Docker Hub
+      run:
+        docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
+#  
+    - uses: cschleiden/replace-tokens@v1
+      with:
+        files: '["k8s/*.yml"]'
+        tokenPrefix: __ # optional, default is #{
+        tokenSuffix: __ # optional, default is }#
+      env:
+        DOCKER_REPOSITORY: ${{ env.DOCKER_REPOSITORY }}
+        IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
+#
+# Connect the target Azure Kubernetes Service (AKS) cluster. 
+    - name: Set the AKS cluster
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: ${{ env.CLUSTER_NAME }}
+        resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+#
+# Deploy app to AKS
+    - uses: azure/k8s-deploy@v1
+      with:
+        namespace: ${{ env.NAMESPACE }}
+        manifests: |
+          k8s/helloworld-deployment.azure.yml
+#          manifests/service.yml
+#        images: |
+#          ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+
+#           $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER 
+#        imagepullsecrets: |
+#          ${{ env.REGISTRY_NAME }}-registry-connection
+        
