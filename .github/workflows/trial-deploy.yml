@@ -87,7 +87,7 @@ jobs:
           k8s/helloworld-deployment.azure.v2.yml
         #  k8s/service.yml
         # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
-        images: eche21/demohelloworldapp:3911385f8ad8f3855435b04c8c715771ee02d7c8
+        images: eche21/catnip:latest
         #docker pull nginx
         # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
         imagepullsecrets: docker-image-pull-secret
