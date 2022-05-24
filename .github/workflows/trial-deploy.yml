@@ -5,16 +5,12 @@
 # 2. Create and run DB Migration script on the QA database
 # 3. Deploy image to QA 
 
-name: build_and_deploy_aks
+name: deploy_aks
 
 on:
-  pull_request:
+  push:
     branches:
-      - main      
-#on:
-#  push:
-#    branches:
-#      - che
+      - che
 # This is a basic workflow to help you get started with Actions
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -47,11 +43,6 @@ jobs:
     
     #
 #
-    - name: Build Docker Image
-      run:
-#        docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER --build-arg=token=secrets.MYTOKEN --no-cache
-        docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA --build-arg=token=secrets.MYTOKEN --no-cache
-#
 #Login to Docker Hub, and push the image. We need username and password. These are
 #provided as secrets and the secrets have been created and stored in Github
 #DOCKER_REPOSITORY is the username
@@ -61,13 +52,7 @@ jobs:
       run: |
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKER_REPOSITORY --password-stdin
 #
-#Push the image using docker push
-#
-    - name: Push Image to Docker Hub
-      run:
-#        docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
-        docker push $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA
-      
+#    
     - name: Azure Kubernetes set context
       uses: Azure/aks-set-context@v1
       with:
@@ -102,8 +87,8 @@ jobs:
           k8s/helloworld-deployment.azure.v2.yml
         #  k8s/service.yml
         # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
-        images: '$DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA'
-        #'$DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER'
+        images: nginx
+        #docker pull nginx
         # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
         imagepullsecrets: docker-image-pull-secret
         #

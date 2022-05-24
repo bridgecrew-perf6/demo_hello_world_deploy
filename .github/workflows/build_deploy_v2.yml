@@ -10,7 +10,7 @@ name: build_and_deploy_hello_world_v1
 on:
   pull_request:
     branches:
-      - che
+      - main
 #############################################################################################
 # jobs:
 
