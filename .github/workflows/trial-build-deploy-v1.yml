@@ -48,8 +48,9 @@ jobs:
     #
 #
     - name: docker build
-      run: docker build -t demo_hello_world_deploy:'${{github.sha}}' .
-    
+#      run: docker build -t demo_hello_world_deploy:'${{github.sha}}' .
+      run:     docker build ./FirstApp/ --file ./FirstApp/Dockerfile --tag demo_hello_world_deploy:'${{github.sha}}' --build-arg=token=secrets.MYTOKEN --no-cache    
+
     - name: docker login
       run: docker login --username '${{secrets.DOCKERHUB_USERNAME}}' --password '${{secrets.DOCKERHUB_PASSWORD}}'
       
