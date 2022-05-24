@@ -16,7 +16,7 @@ spec:
       containers:
       - name: helloworldapp
         #image: $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA 
-        image: eche21/catnip:latest
+        image: '${{secrets.DOCKERHUB_USERNAME}}/Demo_hello_world_deploy:${{github.sha}}'
         #$DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
         ports:
         - containerPort: 80
