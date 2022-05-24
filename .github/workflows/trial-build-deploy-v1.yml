@@ -48,16 +48,16 @@ jobs:
     #
 #
     - name: docker build
-      run: docker build -t Demo_hello_world_deploy:'${{github.sha}}' .
+      run: docker build -t demo_hello_world_deploy:'${{github.sha}}' .
     
     - name: docker login
       run: docker login --username '${{secrets.DOCKERHUB_USERNAME}}' --password '${{secrets.DOCKERHUB_PASSWORD}}'
       
     - name: tag docker image
-      run: docker tag Demo_hello_world_deploy:'${{github.sha}}' '${{secrets.DOCKERHUB_USERNAME}}'/Demo_hello_world_deploy:'${{github.sha}}'
+      run: docker tag demo_hello_world_deploy:'${{github.sha}}' '${{secrets.DOCKERHUB_USERNAME}}'/demo_hello_world_deploy:'${{github.sha}}'
     
     - name: push docker image
-      run: docker push '${{secrets.DOCKERHUB_USERNAME}}'/Demo_hello_world_deploy:'${{github.sha}}'
+      run: docker push '${{secrets.DOCKERHUB_USERNAME}}'/demo_hello_world_deploy:'${{github.sha}}'
       
     - name: Azure Kubernetes set context
       uses: Azure/aks-set-context@v1
@@ -93,7 +93,7 @@ jobs:
           k8s/helloworld-deployment.azure.v2.yml
         #  k8s/service.yml
         # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
-        images: '${{secrets.DOCKERHUB_USERNAME}}/Demo_hello_world_deploy:${{github.sha}}'
+        images: '${{secrets.DOCKERHUB_USERNAME}}/demo_hello_world_deploy:${{github.sha}}'
         #'$DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER'
         # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
         imagepullsecrets: docker-image-pull-secret
