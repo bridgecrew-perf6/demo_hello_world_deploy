@@ -1,21 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: helloapp-deployment
+  name: helloworldapp-deployment
   namespace: demo-che
 spec:
   selector:
     matchLabels:
-      app: helloapp
+      app: helloworldapp
   replicas: 1 # tells deployment to run 2 pods matching the template
   template:
     metadata:
       labels:
-        app: helloapp
+        app: helloworldapp
     spec:
       containers:
-      - name: helloapp
-        image: $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER 
+      - name: helloworldapp
+        #image: $DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA 
+        image: eche21/demohelloworldapp:3911385f8ad8f3855435b04c8c715771ee02d7c8
+        #$DOCKER_REPOSITORY/$IMAGE_NAME:$GITHUB_RUN_NUMBER
         ports:
         - containerPort: 80
 
