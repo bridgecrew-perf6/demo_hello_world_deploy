@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helloworld-deployment
-  namespace: demo-che
+  namespace: demo-eche
   labels:
     app: helloworld
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: helloworld
@@ -17,7 +17,9 @@ spec:
     spec:
       containers:
       - name: helloworld
-        image: ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+#        image: ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
+        image: eche21/demo_hello_world_deploy:1bed1599bde27bd279e5f08616226654318f610c
+
         ports:
         - containerPort: 80
         resources:

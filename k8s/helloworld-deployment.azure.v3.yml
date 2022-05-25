@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-hello-deployment
+  namespace: demo-eche
+spec:
+  selector:
+    matchLabels:
+      app: demo-hello
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: demo-hello
+    spec:
+      containers:
+      - name: demo-hello
+        image:  eche21/demohelloworldapp:0f80b859ae3ce77ec66441d82dee0226ec241e8f
+        ports:
+        - containerPort: 80
+
